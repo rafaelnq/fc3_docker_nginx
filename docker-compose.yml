@@ -1,4 +1,4 @@
-version: '3'
+version: "3.8"
 
 services:
 
@@ -19,7 +19,8 @@ services:
       - ./node:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.0
@@ -29,6 +30,12 @@ services:
       MYSQL_DATABASE: nodedb
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   mysql_data:
